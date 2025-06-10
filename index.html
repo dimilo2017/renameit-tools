@@ -5,8 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RenameIt.tools – Free File Tools</title>
 
-  <!-- ✅ Correct CSS path -->
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      color: #222;
+      text-align: center;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 1rem 0;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    nav {
+      margin-top: 0.5rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 0.95rem;
+    }
+    main {
+      padding: 2rem 1rem;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    .tool-grid a {
+      display: block;
+      padding: 1rem;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+    .tool-grid a:hover {
+      background-color: #eef6ff;
+      transform: scale(1.03);
+    }
+    footer {
+      background-color: #007bff;
+      color: white;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+    footer a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .ad-banner-top, .ad-footer {
+      margin: 1rem auto;
+    }
+  </style>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-V0CZYZSJRE"></script>
@@ -23,11 +91,11 @@
 </head>
 <body>
   <header>
-    <h1>RenameIt.tools</h1>
+    <h1>🛠️ RenameIt.tools</h1>
     <nav>
       <a href="about.html">About</a> |
       <a href="faq.html">FAQ</a> |
-      <a href="http://coff.ee/midoy" target="_blank" rel="noopener">☕ Support Mido</a>
+      <a href="https://coff.ee/midoy" target="_blank" rel="noopener">☕ Support Mido</a>
     </nav>
   </header>
 
@@ -43,8 +111,8 @@
   </div>
 
   <main>
-    <h2>Choose a Tool</h2>
-    <div class="tool-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 2rem 1rem;">
+    <h2 style="font-size: 1.6rem; color: #333;">🚀 Choose a Tool</h2>
+    <div class="tool-grid">
       <a href="rename.html">🔤 Rename Files</a>
       <a href="compress-pdf.html">📄 Compress PDF</a>
       <a href="jpg-to-pdf.html">🖼️ JPG to PDF</a>
@@ -56,9 +124,8 @@
 
   <footer>
     <p>
-      <a href="https://www.buymeacoffee.com/medicodev" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
-        Made with ❤️ by Mido • 100% Secure – All tools run in your browser • ☕ Buy me a coffee
-      </a>
+      🔒 100% Secure & Private • Made with ❤️ by Mehdi  
+      • <a href="https://coff.ee/midoy" target="_blank">☕ Buy me a coffee</a>
     </p>
 
     <!-- Sticky Footer Ad -->
