@@ -53,7 +53,7 @@
   <div class="ad-banner-top">[Top Ad Banner Placeholder]</div>
 
   <main class="container">
-    <h2>🗜️ Drag and drop your PDF to compress</h2>
+    <h2>📄 Drag and drop your PDF to compress</h2>
 
     <div class="drop-zone" onclick="fileInput.click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
       Drop PDF file here or click to upload
@@ -89,7 +89,62 @@
     }
 
     async function compressPDF() {
-      alert('Compression feature is under construction.');
+      const importRes = await fetch("https://api.cloudconvert.com/v2/import/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({})
+      });
+      const importData = await importRes.json();
+      const uploadUrl = importData.data.result.form.url;
+      const fileParam = Object.keys(importData.data.result.form.parameters).find(key => key.startsWith("file"));
+
+      const form = new FormData();
+      for (const key in importData.data.result.form.parameters) {
+        form.append(key, importData.data.result.form.parameters[key]);
+      }
+      form.append("file", uploadedFile);
+
+      await fetch(uploadUrl, {
+        method: "POST",
+        body: form
+      });
+
+      const jobRes = await fetch("https://api.cloudconvert.com/v2/jobs", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          tasks: {
+            import_upload: {
+              operation: "import/upload",
+              result: importData.data.id
+            },
+            compress: {
+              operation: "optimize",
+              input: "import_upload",
+              output_format: "pdf"
+            },
+            export_url: {
+              operation: "export/url",
+              input: "compress"
+            }
+          }
+        })
+      });
+
+      const jobData = await jobRes.json();
+      const downloadTask = jobData.data.tasks.find(t => t.name === "export_url");
+      const fileUrl = downloadTask.result.files[0].url;
+
+      const a = document.createElement("a");
+      a.href = fileUrl;
+      a.download = "compressed.pdf";
+      a.click();
     }
   </script>
 </body>
