@@ -53,7 +53,7 @@
   <div class="ad-banner-top">[Top Ad Banner Placeholder]</div>
 
   <main class="container">
-    <h2>📄 Drag and drop your PDF to compress</h2>
+    <h2>🗜️ Drag and drop your PDF to compress</h2>
 
     <div class="drop-zone" onclick="fileInput.click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
       Drop PDF file here or click to upload
@@ -66,7 +66,7 @@
 
   <footer>
     <p>
-      Made with ❤️ by Mehdi • 100% Secure – All tools run in your browser  • <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
+      Made with ❤️ by Mehdi • 100% Secure – All tools run in your browser • <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
     </p>
     <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
   </footer>
@@ -89,61 +89,57 @@
     }
 
     async function compressPDF() {
-      const importRes = await fetch("https://api.cloudconvert.com/v2/import/upload", {
-        method: "POST",
+      const jobResponse = await fetch('https://api.cloudconvert.com/v2/jobs', {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({})
-      });
-      const importData = await importRes.json();
-      const uploadUrl = importData.data.result.form.url;
-      const fileParam = Object.keys(importData.data.result.form.parameters).find(key => key.startsWith("file"));
-
-      const form = new FormData();
-      for (const key in importData.data.result.form.parameters) {
-        form.append(key, importData.data.result.form.parameters[key]);
-      }
-      form.append("file", uploadedFile);
-
-      await fetch(uploadUrl, {
-        method: "POST",
-        body: form
-      });
-
-      const jobRes = await fetch("https://api.cloudconvert.com/v2/jobs", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           tasks: {
-            import_upload: {
-              operation: "import/upload",
-              result: importData.data.id
+            upload_file: {
+              operation: 'import/upload'
             },
             compress: {
-              operation: "optimize",
-              input: "import_upload",
-              output_format: "pdf"
+              operation: 'optimize',
+              input: 'upload_file',
+              output_format: 'pdf'
             },
-            export_url: {
-              operation: "export/url",
-              input: "compress"
+            export_file: {
+              operation: 'export/url',
+              input: 'compress'
             }
           }
         })
       });
 
-      const jobData = await jobRes.json();
-      const downloadTask = jobData.data.tasks.find(t => t.name === "export_url");
-      const fileUrl = downloadTask.result.files[0].url;
+      const jobData = await jobResponse.json();
+      const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
+      const uploadUrl = uploadTask.result.form.url;
+      const form = new FormData();
+      form.append('file', uploadedFile);
 
-      const a = document.createElement("a");
-      a.href = fileUrl;
-      a.download = "compressed.pdf";
+      await fetch(uploadUrl, {
+        method: 'POST',
+        body: form
+      });
+
+      let exportUrl;
+      while (!exportUrl) {
+        await new Promise(r => setTimeout(r, 3000));
+        const jobStatus = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobData.data.id}`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const statusData = await jobStatus.json();
+        const exportTask = statusData.data.tasks.find(t => t.name === 'export_file' && t.status === 'finished');
+        if (exportTask) {
+          exportUrl = exportTask.result.files[0].url;
+        }
+      }
+
+      const a = document.createElement('a');
+      a.href = exportUrl;
+      a.download = 'compressed.pdf';
       a.click();
     }
   </script>
