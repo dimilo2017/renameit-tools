@@ -73,7 +73,7 @@
 
   <script>
     let uploadedFile;
-    const token = 'YOUR_CLOUDCONVERT_TOKEN_HERE';
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTFjYTEwZTY1M2Y4OWY4ZjNlNzc3OWZkMDhlYmMwZGEzN2E2ODFjZjVhMjA1Yzc3YThhNDZiOThmOTk2NjFiODlmMzI0NjNlYjVmZjViNzciLCJpYXQiOjE3NDk1ODQ5OTguODMzMjE4LCJuYmYiOjE3NDk1ODQ5OTguODMzMjIsImV4cCI6NDkwNTI1ODU5OC44MTIxNDQsInN1YiI6IjcyMTYyMzY3Iiwic2NvcGVzIjpbInVzZXIucmVhZCIsInVzZXIud3JpdGUiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwid2ViaG9vay5yZWFkIiwid2ViaG9vay53cml0ZSIsInByZXNldC5yZWFkIiwicHJlc2V0LndyaXRlIl19.QvXmxzm8iDeXxSuDuFwk_95oE7kbS7s-ljT4A5ExCK8hk6dZjcVdVUtm0Xdp3bSSd6fWtdZqYisUYfvwvLTNXG3v2KIXk49GwIUQN7xn8XCM2_3B7CIX7QtSNWodxyWZu7BYM-W1ltXPKy0H6FovxAJiVbIqVFJUE52Zbyc7SX04mDvhWWZRbKf5xkOhG9E8GvAN7xjSGxGqs9CJlEo4J65LNIXEHDoxZrBcGykXcBMUn6DH92dqCFBjD5h-N1Ufc4PO2AY02X6Y8q265N6DE2dXaVWNS6eVJAix9L_8ZZPLN8rrQjZaxT1sht26xkiFxEx72yvZLfYNl3KUt5ugYgd-i24_EbV5ikkBsnu_KfC3VGc7TxhKm2EMrYjim1maGqsAkhxkmy3XzyhcAmTggeZ8hNSkWe3o_z4lEOcco3BaQ0nIhJ0lxG5BD1twKQo-dy_3ly4o-nRH4RankB714wHkQ4cBchCvJD7gsCNsvnUoRjyA-wwZgt7KS1Ph8XYAaAsZl4BSOrhXV5gHyPMsQuJnNQnSs9aboKCYZVePPPWnza_YXb4vaSqshGOp9L01NEcfOLGhqWa5Hrmxb-Oz-FPrFJBcr_VhFTa0dJ-w8zpU_jSLvsgJ6xdrAdCuihNvyRs6eksgAhfrVOhFoxCU5tJH3dhet_0WemnYcfiV2K4';
 
     function handleFiles(files) {
       uploadedFile = files[0];
@@ -89,58 +89,7 @@
     }
 
     async function compressPDF() {
-      const formData = new FormData();
-      formData.append('file', uploadedFile);
-
-      const response = await fetch('https://api.cloudconvert.com/v2/import/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-      });
-
-      const uploadInfo = await response.json();
-      const uploadUrl = uploadInfo.data.url;
-
-      await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: {},
-        body: uploadedFile
-      });
-
-      const jobResponse = await fetch('https://api.cloudconvert.com/v2/jobs', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          tasks: {
-            import_my_file: {
-              operation: 'import/upload'
-            },
-            compress: {
-              operation: 'optimize',
-              input: 'import_my_file',
-              output_format: 'pdf'
-            },
-            export_my_file: {
-              operation: 'export/url',
-              input: 'compress'
-            }
-          }
-        })
-      });
-
-      const jobData = await jobResponse.json();
-      const downloadUrl = jobData.data.tasks.find(t => t.name === 'export_my_file').result.files[0].url;
-
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = 'compressed.pdf';
-      a.click();
+      alert('Compression feature is under construction.');
     }
   </script>
 </body>
