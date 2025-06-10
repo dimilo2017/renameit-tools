@@ -16,24 +16,19 @@
   </script>
 
   <style>
-    .container { max-width: 1000px; margin: 2rem auto; display: flex; gap: 2rem; padding: 0 1rem; }
-    .settings-panel { width: 300px; text-align: left; background: #f3f3f3; padding: 1rem; border-radius: 8px; }
-    .settings-panel h3 { margin-top: 0; }
-    .settings-panel input {
-      width: 100%;
-      padding: 8px;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    .container { max-width: 800px; margin: 2rem auto; text-align: center; }
+    input[type="text"], input[type="number"] {
+      padding: 10px;
+      margin: 5px;
+      width: 200px;
     }
     .drop-zone {
-      flex-grow: 1;
       border: 2px dashed #007bff;
       padding: 40px;
       border-radius: 10px;
       background: #f0f8ff;
       cursor: pointer;
-      text-align: center;
+      margin-top: 20px;
     }
     .file-list { margin-top: 20px; text-align: left; }
     .file-list li { margin: 5px 0; }
@@ -45,14 +40,6 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-    }
-    .example-box {
-      margin-top: 1rem;
-      background: #fff;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      color: #555;
     }
   </style>
 </head>
@@ -71,33 +58,25 @@
   <div class="ad-banner-top">[Top Ad Banner Placeholder]</div>
 
   <main class="container">
-    <div class="settings-panel">
-      <h3>🛠️ Rename Settings</h3>
-      <label>Prefix:</label>
-      <input type="text" id="prefix" placeholder="e.g. travel_" />
-      <label>Suffix:</label>
-      <input type="text" id="suffix" placeholder="e.g. _edited" />
-      <label>Start Number:</label>
-      <input type="number" id="startNum" placeholder="1" value="1" />
+    <h2>🔤 Rename Your Files</h2>
 
-      <div class="example-box">
-        <strong>Example Output:</strong><br>
-        <span id="exampleText">travel_1_edited.jpg</span>
-      </div>
-    </div>
+    <input type="text" id="prefix" placeholder="Prefix" />
+    <input type="text" id="suffix" placeholder="Suffix" />
+    <input type="number" id="startNum" placeholder="Start Number" value="1" />
 
     <div class="drop-zone" onclick="fileInput.click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
-      Drag & Drop Files Here or Click to Upload<br>
+      Drag & Drop Files Here or Click to Upload
       <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFiles(this.files)" />
-      <ul id="previewList" class="file-list"></ul>
-      <button class="download-btn" onclick="downloadAll()">Download Renamed Files</button>
     </div>
+
+    <ul id="previewList" class="file-list"></ul>
+
+    <button class="download-btn" onclick="downloadAll()">Download Renamed Files</button>
   </main>
 
   <footer>
     <p>
-      Made with ❤️ by Mehdi • 100% Secure – All tools run in your browser •
-      <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
+      Made with ❤️ by Mehdi • 100% Secure – All tools run in your browser  • <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
     </p>
     <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
   </footer>
@@ -120,7 +99,6 @@
       const prefix = document.getElementById("prefix").value || "";
       const suffix = document.getElementById("suffix").value || "";
       const startNum = parseInt(document.getElementById("startNum").value) || 1;
-      const exampleText = document.getElementById("exampleText");
 
       const list = document.getElementById("previewList");
       list.innerHTML = "";
@@ -132,9 +110,6 @@
         li.textContent = `${file.name} → ${newName}`;
         list.appendChild(li);
       });
-
-      // update example text
-      exampleText.textContent = `${prefix}${startNum}${suffix}.jpg`;
     }
 
     ["prefix", "suffix", "startNum"].forEach(id => {
