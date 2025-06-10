@@ -55,7 +55,7 @@
   <main class="container">
     <h2>🗜️ Drag and drop your PDF to compress</h2>
 
-    <div class="drop-zone" onclick="fileInput.click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
       Drop PDF file here or click to upload
       <input type="file" id="fileInput" accept="application/pdf" style="display: none;" onchange="handleFiles(this.files)" />
     </div>
@@ -73,7 +73,7 @@
 
   <script>
     let uploadedFile;
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTFjYTEwZTY1M2Y4OWY4ZjNlNzc3OWZkMDhlYmMwZGEzN2E2ODFjZjVhMjA1Yzc3YThhNDZiOThmOTk2NjFiODlmMzI0NjNlYjVmZjViNzciLCJpYXQiOjE3NDk1ODQ5OTguODMzMjE4LCJuYmYiOjE3NDk1ODQ5OTguODMzMjIsImV4cCI6NDkwNTI1ODU5OC44MTIxNDQsInN1YiI6IjcyMTYyMzY3Iiwic2NvcGVzIjpbInVzZXIucmVhZCIsInVzZXIud3JpdGUiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwid2ViaG9vay5yZWFkIiwid2ViaG9vay53cml0ZSIsInByZXNldC5yZWFkIiwicHJlc2V0LndyaXRlIl19.QvXmxzm8iDeXxSuDuFwk_95oE7kbS7s-ljT4A5ExCK8hk6dZjcVdVUtm0Xdp3bSSd6fWtdZqYisUYfvwvLTNXG3v2KIXk49GwIUQN7xn8XCM2_3B7CIX7QtSNWodxyWZu7BYM-W1ltXPKy0H6FovxAJiVbIqVFJUE52Zbyc7SX04mDvhWWZRbKf5xkOhG9E8GvAN7xjSGxGqs9CJlEo4J65LNIXEHDoxZrBcGykXcBMUn6DH92dqCFBjD5h-N1Ufc4PO2AY02X6Y8q265N6DE2dXaVWNS6eVJAix9L_8ZZPLN8rrQjZaxT1sht26xkiFxEx72yvZLfYNl3KUt5ugYgd-i24_EbV5ikkBsnu_KfC3VGc7TxhKm2EMrYjim1maGqsAkhxkmy3XzyhcAmTggeZ8hNSkWe3o_z4lEOcco3BaQ0nIhJ0lxG5BD1twKQo-dy_3ly4o-nRH4RankB714wHkQ4cBchCvJD7gsCNsvnUoRjyA-wwZgt7KS1Ph8XYAaAsZl4BSOrhXV5gHyPMsQuJnNQnSs9aboKCYZVePPPWnza_YXb4vaSqshGOp9L01NEcfOLGhqWa5Hrmxb-Oz-FPrFJBcr_VhFTa0dJ-w8zpU_jSLvsgJ6xdrAdCuihNvyRs6eksgAhfrVOhFoxCU5tJH3dhet_0WemnYcfiV2K4';
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'; // your actual token here
 
     function handleFiles(files) {
       uploadedFile = files[0];
@@ -89,58 +89,60 @@
     }
 
     async function compressPDF() {
-      const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          tasks: {
-            upload_file: {
-              operation: 'import/upload'
-            },
-            compress: {
-              operation: 'optimize',
-              input: 'upload_file',
-              output_format: 'pdf'
-            },
-            export_file: {
-              operation: 'export/url',
-              input: 'compress'
+      try {
+        // Step 1: Create job
+        const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            tasks: {
+              upload_file: { operation: 'import/upload' },
+              compress: { operation: 'optimize', input: 'upload_file', output_format: 'pdf' },
+              export_file: { operation: 'export/url', input: 'compress' }
             }
-          }
-        })
-      });
-
-      const jobData = await jobRes.json();
-      const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
-      const uploadUrl = uploadTask.result.form.url;
-      const form = new FormData();
-      form.append('file', uploadedFile);
-
-      await fetch(uploadUrl, {
-        method: 'POST',
-        body: form
-      });
-
-      let downloadUrl = '';
-      while (!downloadUrl) {
-        await new Promise(r => setTimeout(r, 4000));
-        const checkRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobData.data.id}`, {
-          headers: { 'Authorization': 'Bearer ' + token }
+          })
         });
-        const checkData = await checkRes.json();
-        const exportTask = checkData.data.tasks.find(t => t.name === 'export_file' && t.status === 'finished');
-        if (exportTask) {
-          downloadUrl = exportTask.result.files[0].url;
-        }
-      }
 
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = 'compressed.pdf';
-      a.click();
+        const jobData = await jobRes.json();
+        const jobId = jobData.data.id;
+        const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
+
+        // Step 2: Upload file
+        const uploadUrl = uploadTask.result.form.url;
+        const uploadForm = new FormData();
+        Object.entries(uploadTask.result.form.parameters).forEach(([key, value]) => {
+          uploadForm.append(key, value);
+        });
+        uploadForm.append('file', uploadedFile);
+
+        await fetch(uploadUrl, { method: 'POST', body: uploadForm });
+
+        // Step 3: Poll for result
+        let downloadUrl = null;
+        while (!downloadUrl) {
+          await new Promise(r => setTimeout(r, 3000));
+          const pollRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const pollData = await pollRes.json();
+          const exportTask = pollData.data.tasks.find(t => t.name === 'export_file' && t.status === 'finished');
+          if (exportTask) {
+            downloadUrl = exportTask.result.files[0].url;
+          }
+        }
+
+        // Step 4: Download
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'compressed.pdf';
+        a.click();
+      } catch (error) {
+        alert('Compression failed. Please try again later.');
+        console.error(error);
+      }
     }
   </script>
 </body>
