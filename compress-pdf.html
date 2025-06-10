@@ -42,7 +42,7 @@
     <h1>📄 Compress PDF – RenameIt.tools</h1>
     <nav>
       <a href="index.html">🏠 Home</a> |
-      <a href="about.html">About</a> |
+      <a href="about.html">About Us</a> |
       <a href="faq.html">FAQ</a> |
       <a href="suggest.html">Suggest</a> |
       <a href="https://coff.ee/midoy" target="_blank">☕ Support</a>
@@ -90,7 +90,6 @@
 
     async function compressPDF() {
       try {
-        // Step 1: Create job
         const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
           method: 'POST',
           headers: {
@@ -110,7 +109,6 @@
         const jobId = jobData.data.id;
         const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
 
-        // Step 2: Upload file
         const uploadUrl = uploadTask.result.form.url;
         const uploadForm = new FormData();
         Object.entries(uploadTask.result.form.parameters).forEach(([key, value]) => {
@@ -120,7 +118,6 @@
 
         await fetch(uploadUrl, { method: 'POST', body: uploadForm });
 
-        // Step 3: Poll for result
         let downloadUrl = null;
         while (!downloadUrl) {
           await new Promise(r => setTimeout(r, 3000));
@@ -134,7 +131,6 @@
           }
         }
 
-        // Step 4: Download
         const a = document.createElement('a');
         a.href = downloadUrl;
         a.download = 'compressed.pdf';
