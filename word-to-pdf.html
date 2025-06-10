@@ -1,1 +1,151 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>word-to-pdf.html</title></head><body><h1>word-to-pdf.html</h1><p>This tool is coming soon.</p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word to PDF – RenameIt.tools</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V0CZYZSJRE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V0CZYZSJRE');
+  </script>
+
+  <style>
+    .container { max-width: 800px; margin: 2rem auto; text-align: center; }
+    .drop-zone {
+      border: 2px dashed #007bff;
+      padding: 40px;
+      border-radius: 10px;
+      background: #f0f8ff;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .file-name { margin-top: 20px; font-weight: bold; }
+    .download-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📑 Word to PDF – RenameIt.tools</h1>
+    <nav>
+      <a href="index.html">🏠 Home</a> |
+      <a href="about.html">About Us</a> |
+      <a href="faq.html">FAQ</a> |
+      <a href="suggest.html">Suggest</a> |
+      <a href="https://coff.ee/midoy" target="_blank">☕ Support</a>
+    </nav>
+  </header>
+
+  <div class="ad-banner-top">[Top Ad Banner Placeholder]</div>
+
+  <main class="container">
+    <h2>📤 Convert your Word Document to PDF</h2>
+
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+      Drop DOCX file here or click to upload
+      <input type="file" id="fileInput" accept=".doc,.docx" style="display: none;" onchange="handleFiles(this.files)" />
+    </div>
+
+    <div class="file-name" id="fileName"></div>
+    <button class="download-btn" id="convertBtn" onclick="convertToPDF()" disabled>Convert & Download</button>
+  </main>
+
+  <footer>
+    <p>
+      Made with ❤️ by Mido • 100% Secure – All tools run in your browser • <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
+    </p>
+    <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
+  </footer>
+
+  <script>
+    let uploadedFile;
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'; // your token here
+
+    function handleFiles(files) {
+      uploadedFile = files[0];
+      if (uploadedFile && uploadedFile.name.match(/\.(doc|docx)$/i)) {
+        document.getElementById('fileName').textContent = uploadedFile.name;
+        document.getElementById('convertBtn').disabled = false;
+      }
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      handleFiles(event.dataTransfer.files);
+    }
+
+    async function convertToPDF() {
+      try {
+        const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            tasks: {
+              upload_file: { operation: 'import/upload' },
+              convert: {
+                operation: 'convert',
+                input: 'upload_file',
+                input_format: 'docx',
+                output_format: 'pdf'
+              },
+              export: { operation: 'export/url', input: 'convert' }
+            }
+          })
+        });
+
+        const jobData = await jobRes.json();
+        const jobId = jobData.data.id;
+        const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
+
+        const uploadUrl = uploadTask.result.form.url;
+        const uploadForm = new FormData();
+        Object.entries(uploadTask.result.form.parameters).forEach(([key, value]) => {
+          uploadForm.append(key, value);
+        });
+        uploadForm.append('file', uploadedFile);
+
+        await fetch(uploadUrl, { method: 'POST', body: uploadForm });
+
+        let downloadLinks = [];
+        while (downloadLinks.length === 0) {
+          await new Promise(r => setTimeout(r, 3000));
+          const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const statusData = await statusRes.json();
+          const exportTask = statusData.data.tasks.find(t => t.name === 'export' && t.status === 'finished');
+          if (exportTask) {
+            downloadLinks = exportTask.result.files;
+          }
+        }
+
+        downloadLinks.forEach(file => {
+          const a = document.createElement('a');
+          a.href = file.url;
+          a.download = file.filename;
+          a.click();
+        });
+      } catch (error) {
+        alert('Conversion failed. Please try again later.');
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
