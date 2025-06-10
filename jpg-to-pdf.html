@@ -1,1 +1,148 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>jpg-to-pdf.html</title></head><body><h1>jpg-to-pdf.html</h1><p>This tool is coming soon.</p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JPG to PDF – RenameIt.tools</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V0CZYZSJRE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V0CZYZSJRE');
+  </script>
+
+  <style>
+    .container { max-width: 800px; margin: 2rem auto; text-align: center; }
+    .drop-zone {
+      border: 2px dashed #007bff;
+      padding: 40px;
+      border-radius: 10px;
+      background: #f0f8ff;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .file-name { margin-top: 20px; font-weight: bold; }
+    .download-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖼️ JPG to PDF – RenameIt.tools</h1>
+    <nav>
+      <a href="index.html">🏠 Home</a> |
+      <a href="about.html">About</a> |
+      <a href="faq.html">FAQ</a> |
+      <a href="suggest.html">Suggest</a> |
+      <a href="https://coff.ee/midoy" target="_blank">☕ Support</a>
+    </nav>
+  </header>
+
+  <div class="ad-banner-top">[Top Ad Banner Placeholder]</div>
+
+  <main class="container">
+    <h2>🖼️ Drag and drop JPG images to convert to PDF</h2>
+
+    <div class="drop-zone" onclick="fileInput.click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+      Drop JPG files here or click to upload
+      <input type="file" id="fileInput" accept="image/jpeg" multiple style="display: none;" onchange="handleFiles(this.files)" />
+    </div>
+
+    <div class="file-name" id="fileName"></div>
+    <button class="download-btn" id="convertBtn" onclick="convertJPGtoPDF()" disabled>Convert & Download PDF</button>
+  </main>
+
+  <footer>
+    <p>
+      Made with ❤️ by Mehdi • 100% Secure – All tools run in your browser • <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
+    </p>
+    <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
+  </footer>
+
+  <script>
+    let uploadedFiles = [];
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTFjYTEwZTY1M2Y4OWY4ZjNlNzc3OWZkMDhlYmMwZGEzN2E2ODFjZjVhMjA1Yzc3YThhNDZiOThmOTk2NjFiODlmMzI0NjNlYjVmZjViNzciLCJpYXQiOjE3NDk1ODQ5OTguODMzMjE4LCJuYmYiOjE3NDk1ODQ5OTguODMzMjIsImV4cCI6NDkwNTI1ODU5OC44MTIxNDQsInN1YiI6IjcyMTYyMzY3Iiwic2NvcGVzIjpbInVzZXIucmVhZCIsInVzZXIud3JpdGUiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwid2ViaG9vay5yZWFkIiwid2ViaG9vay53cml0ZSIsInByZXNldC5yZWFkIiwicHJlc2V0LndyaXRlIl19.QvXmxzm8iDeXxSuDuFwk_95oE7kbS7s-ljT4A5ExCK8hk6dZjcVdVUtm0Xdp3bSSd6fWtdZqYisUYfvwvLTNXG3v2KIXk49GwIUQN7xn8XCM2_3B7CIX7QtSNWodxyWZu7BYM-W1ltXPKy0H6FovxAJiVbIqVFJUE52Zbyc7SX04mDvhWWZRbKf5xkOhG9E8GvAN7xjSGxGqs9CJlEo4J65LNIXEHDoxZrBcGykXcBMUn6DH92dqCFBjD5h-N1Ufc4PO2AY02X6Y8q265N6DE2dXaVWNS6eVJAix9L_8ZZPLN8rrQjZaxT1sht26xkiFxEx72yvZLfYNl3KUt5ugYgd-i24_EbV5ikkBsnu_KfC3VGc7TxhKm2EMrYjim1maGqsAkhxkmy3XzyhcAmTggeZ8hNSkWe3o_z4lEOcco3BaQ0nIhJ0lxG5BD1twKQo-dy_3ly4o-nRH4RankB714wHkQ4cBchCvJD7gsCNsvnUoRjyA-wwZgt7KS1Ph8XYAaAsZl4BSOrhXV5gHyPMsQuJnNQnSs9aboKCYZVePPPWnza_YXb4vaSqshGOp9L01NEcfOLGhqWa5Hrmxb-Oz-FPrFJBcr_VhFTa0dJ-w8zpU_jSLvsgJ6xdrAdCuihNvyRs6eksgAhfrVOhFoxCU5tJH3dhet_0WemnYcfiV2K4';
+
+    function handleFiles(files) {
+      uploadedFiles = Array.from(files);
+      if (uploadedFiles.length > 0) {
+        document.getElementById('fileName').textContent = uploadedFiles.map(f => f.name).join(', ');
+        document.getElementById('convertBtn').disabled = false;
+      }
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      handleFiles(event.dataTransfer.files);
+    }
+
+    async function convertJPGtoPDF() {
+      const jobResponse = await fetch('https://api.cloudconvert.com/v2/jobs', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tasks: {
+            upload_file: {
+              operation: 'import/upload'
+            },
+            convert: {
+              operation: 'convert',
+              input: 'upload_file',
+              input_format: 'jpg',
+              output_format: 'pdf'
+            },
+            export_file: {
+              operation: 'export/url',
+              input: 'convert'
+            }
+          }
+        })
+      });
+
+      const jobData = await jobResponse.json();
+      const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
+      const uploadUrl = uploadTask.result.form.url;
+
+      const form = new FormData();
+      form.append('file', uploadedFiles[0]);
+
+      await fetch(uploadUrl, {
+        method: 'POST',
+        body: form
+      });
+
+      let exportUrl;
+      while (!exportUrl) {
+        await new Promise(r => setTimeout(r, 3000));
+        const jobStatus = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobData.data.id}`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const statusData = await jobStatus.json();
+        const exportTask = statusData.data.tasks.find(t => t.name === 'export_file' && t.status === 'finished');
+        if (exportTask) {
+          exportUrl = exportTask.result.files[0].url;
+        }
+      }
+
+      const a = document.createElement('a');
+      a.href = exportUrl;
+      a.download = 'converted.pdf';
+      a.click();
+    }
+  </script>
+</body>
+</html>
