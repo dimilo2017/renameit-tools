@@ -89,7 +89,7 @@
     }
 
     async function compressPDF() {
-      const jobResponse = await fetch('https://api.cloudconvert.com/v2/jobs', {
+      const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -113,7 +113,7 @@
         })
       });
 
-      const jobData = await jobResponse.json();
+      const jobData = await jobRes.json();
       const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
       const uploadUrl = uploadTask.result.form.url;
       const form = new FormData();
@@ -124,21 +124,21 @@
         body: form
       });
 
-      let exportUrl;
-      while (!exportUrl) {
-        await new Promise(r => setTimeout(r, 3000));
-        const jobStatus = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobData.data.id}`, {
+      let downloadUrl = '';
+      while (!downloadUrl) {
+        await new Promise(r => setTimeout(r, 4000));
+        const checkRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobData.data.id}`, {
           headers: { 'Authorization': 'Bearer ' + token }
         });
-        const statusData = await jobStatus.json();
-        const exportTask = statusData.data.tasks.find(t => t.name === 'export_file' && t.status === 'finished');
+        const checkData = await checkRes.json();
+        const exportTask = checkData.data.tasks.find(t => t.name === 'export_file' && t.status === 'finished');
         if (exportTask) {
-          exportUrl = exportTask.result.files[0].url;
+          downloadUrl = exportTask.result.files[0].url;
         }
       }
 
       const a = document.createElement('a');
-      a.href = exportUrl;
+      a.href = downloadUrl;
       a.download = 'compressed.pdf';
       a.click();
     }
