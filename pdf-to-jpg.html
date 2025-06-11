@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF to JPG – RenameIt.tools</title>
-  <meta name="description" content="Convert PDF to JPG instantly online. Free, fast & secure tool by RenameIt.tools – no tracking, no signup." />
-  <meta name="keywords" content="PDF to JPG, convert PDF to image, online PDF to JPG, free PDF converter, RenameIt.tools" />
+  <title>PDF to JPG – Convert PDF Pages to Images | RenameIt.tools</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Convert PDF to JPG images online with RenameIt.tools. Fast, free & secure – no file tracking. Works directly in your browser." />
+  <meta name="keywords" content="PDF to JPG, convert PDF, extract images from PDF, RenameIt.tools, online converter, PDF tools, no tracking" />
+  <meta name="author" content="RenameIt.tools by Mido" />
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-V0CZYZSJRE"></script>
@@ -47,14 +50,15 @@
       <a href="about.html">About Us</a> |
       <a href="faq.html">FAQ</a> |
       <a href="suggest.html">Suggest</a> |
-      <a href="https://coff.ee/midoy" target="_blank">☕ Support</a>
+      <a href="https://coff.ee/midoy" target="_blank" rel="noopener">☕ Support</a>
     </nav>
   </header>
 
+  <!-- Top Ad -->
   <div class="ad-banner-top">[Top Ad Banner Placeholder]</div>
 
   <main class="container">
-    <h2>📥 Convert your PDF pages to JPG images</h2>
+    <h2>🖼️ Convert your PDF file to high-quality JPG images</h2>
 
     <div class="drop-zone" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
       Drop PDF file here or click to upload
@@ -67,15 +71,15 @@
 
   <footer>
     <p>
-      Made with ❤️ by Mido • 100% Secure – All tools run in your browser • 
-      <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
+      Made with ❤️ by Mido • 100% Secure – All tools run in your browser •
+      <a href="https://coff.ee/midoy" target="_blank" rel="noopener">Buy me a coffee</a>
     </p>
     <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
   </footer>
 
   <script>
     let uploadedFile;
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'; // your real token
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTFjYTEwZTY1M2Y4OWY4ZjNlNzc3OWZkMDhlYmMwZGEzN2E2ODFjZjVhMjA1Yzc3YThhNDZiOThmOTk2NjFiODlmMzI0NjNlYjVmZjViNzciLCJpYXQiOjE3NDk1ODQ5OTguODMzMjE4LCJuYmYiOjE3NDk1ODQ5OTguODMzMjIsImV4cCI6NDkwNTI1ODU5OC44MTIxNDQsInN1YiI6IjcyMTYyMzY3Iiwic2NvcGVzIjpbInVzZXIucmVhZCIsInVzZXIud3JpdGUiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwid2ViaG9vay5yZWFkIiwid2ViaG9vay53cml0ZSIsInByZXNldC5yZWFkIiwicHJlc2V0LndyaXRlIl19.QvXmxzm8iDeXxSuDuFwk_95oE7kbS7s-ljT4A5ExCK8hk6dZjcVdVUtm0Xdp3bSSd6fWtdZqYisUYfvwvLTNXG3v2KIXk49GwIUQN7xn8XCM2_3B7CIX7QtSNWodxyWZu7BYM-W1ltXPKy0H6FovxAJiVbIqVFJUE52Zbyc7SX04mDvhWWZRbKf5xkOhG9E8GvAN7xjSGxGqs9CJlEo4J65LNIXEHDoxZrBcGykXcBMUn6DH92dqCFBjD5h-N1Ufc4PO2AY02X6Y8q265N6DE2dXaVWNS6eVJAix9L_8ZZPLN8rrQjZaxT1sht26xkiFxEx72yvZLfYNl3KUt5ugYgd-i24_EbV5ikkBsnu_KfC3VGc7TxhKm2EMrYjim1maGqsAkhxkmy3XzyhcAmTggeZ8hNSkWe3o_z4lEOcco3BaQ0nIhJ0lxG5BD1twKQo-dy_3ly4o-nRH4RankB714wHkQ4cBchCvJD7gsCNsvnUoRjyA-wwZgt7KS1Ph8XYAaAsZl4BSOrhXV5gHyPMsQuJnNQnSs9aboKCYZVePPPWnza_YXb4vaSqshGOp9L01NEcfOLGhqWa5Hrmxb-Oz-FPrFJBcr_VhFTa0dJ-w8zpU_jSLvsgJ6xdrAdCuihNvyRs6eksgAhfrVOhFoxCU5tJH3dhet_0WemnYcfiV2K4';
 
     function handleFiles(files) {
       uploadedFile = files[0];
@@ -101,7 +105,7 @@
           body: JSON.stringify({
             tasks: {
               upload_file: { operation: 'import/upload' },
-              convert_to_jpg: {
+              convert: {
                 operation: 'convert',
                 input: 'upload_file',
                 input_format: 'pdf',
@@ -109,7 +113,7 @@
                 page_range: '1-',
                 engine: 'poppler'
               },
-              export_result: { operation: 'export/url', input: 'convert_to_jpg' }
+              export: { operation: 'export/url', input: 'convert' }
             }
           })
         });
@@ -124,16 +128,17 @@
           uploadForm.append(key, value);
         });
         uploadForm.append('file', uploadedFile);
+
         await fetch(uploadUrl, { method: 'POST', body: uploadForm });
 
         let downloadLinks = [];
         while (downloadLinks.length === 0) {
           await new Promise(r => setTimeout(r, 3000));
-          const pollRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
+          const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
             headers: { 'Authorization': 'Bearer ' + token }
           });
-          const pollData = await pollRes.json();
-          const exportTask = pollData.data.tasks.find(t => t.operation === 'export/url' && t.status === 'finished');
+          const statusData = await statusRes.json();
+          const exportTask = statusData.data.tasks.find(t => t.name === 'export' && t.status === 'finished');
           if (exportTask) {
             downloadLinks = exportTask.result.files;
           }
