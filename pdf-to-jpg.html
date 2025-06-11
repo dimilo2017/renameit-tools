@@ -77,85 +77,111 @@
     <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
   </footer>
 
-  <script>
-    let uploadedFile;
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTFjYTEwZTY1M2Y4OWY4ZjNlNzc3OWZkMDhlYmMwZGEzN2E2ODFjZjVhMjA1Yzc3YThhNDZiOThmOTk2NjFiODlmMzI0NjNlYjVmZjViNzciLCJpYXQiOjE3NDk1ODQ5OTguODMzMjE4LCJuYmYiOjE3NDk1ODQ5OTguODMzMjIsImV4cCI6NDkwNTI1ODU5OC44MTIxNDQsInN1YiI6IjcyMTYyMzY3Iiwic2NvcGVzIjpbInVzZXIucmVhZCIsInVzZXIud3JpdGUiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwid2ViaG9vay5yZWFkIiwid2ViaG9vay53cml0ZSIsInByZXNldC5yZWFkIiwicHJlc2V0LndyaXRlIl19.QvXmxzm8iDeXxSuDuFwk_95oE7kbS7s-ljT4A5ExCK8hk6dZjcVdVUtm0Xdp3bSSd6fWtdZqYisUYfvwvLTNXG3v2KIXk49GwIUQN7xn8XCM2_3B7CIX7QtSNWodxyWZu7BYM-W1ltXPKy0H6FovxAJiVbIqVFJUE52Zbyc7SX04mDvhWWZRbKf5xkOhG9E8GvAN7xjSGxGqs9CJlEo4J65LNIXEHDoxZrBcGykXcBMUn6DH92dqCFBjD5h-N1Ufc4PO2AY02X6Y8q265N6DE2dXaVWNS6eVJAix9L_8ZZPLN8rrQjZaxT1sht26xkiFxEx72yvZLfYNl3KUt5ugYgd-i24_EbV5ikkBsnu_KfC3VGc7TxhKm2EMrYjim1maGqsAkhxkmy3XzyhcAmTggeZ8hNSkWe3o_z4lEOcco3BaQ0nIhJ0lxG5BD1twKQo-dy_3ly4o-nRH4RankB714wHkQ4cBchCvJD7gsCNsvnUoRjyA-wwZgt7KS1Ph8XYAaAsZl4BSOrhXV5gHyPMsQuJnNQnSs9aboKCYZVePPPWnza_YXb4vaSqshGOp9L01NEcfOLGhqWa5Hrmxb-Oz-FPrFJBcr_VhFTa0dJ-w8zpU_jSLvsgJ6xdrAdCuihNvyRs6eksgAhfrVOhFoxCU5tJH3dhet_0WemnYcfiV2K4';
+  <!-- Keep your HTML/SEO/headers, then... -->
 
-    function handleFiles(files) {
-      uploadedFile = files[0];
-      if (uploadedFile && uploadedFile.type === 'application/pdf') {
-        document.getElementById('fileName').textContent = uploadedFile.name;
-        document.getElementById('convertBtn').disabled = false;
-      }
-    }
+<script>
+let uploadedFile;
+const token = 'YOUR_CLOUDCONVERT_API_KEY'; // Make sure your token is valid!
 
-    function handleDrop(event) {
-      event.preventDefault();
-      handleFiles(event.dataTransfer.files);
-    }
+function handleFiles(files) {
+  uploadedFile = files[0];
+  if (uploadedFile && uploadedFile.type === 'application/pdf') {
+    document.getElementById('fileName').textContent = uploadedFile.name;
+    document.getElementById('convertBtn').disabled = false;
+  }
+}
 
-    async function convertPDFtoJPG() {
-      try {
-        const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
+function handleDrop(event) {
+  event.preventDefault();
+  handleFiles(event.dataTransfer.files);
+}
+
+async function convertPDFtoJPG() {
+  const btn = document.getElementById('convertBtn');
+  btn.disabled = true;
+  btn.textContent = 'Converting...';
+
+  try {
+    // 1. Create Job
+    const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        tasks: {
+          'import-1': { operation: 'import/upload' },
+          'convert-1': {
+            operation: 'convert',
+            input: 'import-1',
+            input_format: 'pdf',
+            output_format: 'jpg',
+            engine: 'poppler'
           },
-          body: JSON.stringify({
-            tasks: {
-              upload_file: { operation: 'import/upload' },
-              convert: {
-                operation: 'convert',
-                input: 'upload_file',
-                input_format: 'pdf',
-                output_format: 'jpg',
-                page_range: '1-',
-                engine: 'poppler'
-              },
-              export: { operation: 'export/url', input: 'convert' }
-            }
-          })
-        });
-
-        const jobData = await jobRes.json();
-        const jobId = jobData.data.id;
-        const uploadTask = jobData.data.tasks.find(t => t.name === 'upload_file');
-
-        const uploadUrl = uploadTask.result.form.url;
-        const uploadForm = new FormData();
-        Object.entries(uploadTask.result.form.parameters).forEach(([key, value]) => {
-          uploadForm.append(key, value);
-        });
-        uploadForm.append('file', uploadedFile);
-
-        await fetch(uploadUrl, { method: 'POST', body: uploadForm });
-
-        let downloadLinks = [];
-        while (downloadLinks.length === 0) {
-          await new Promise(r => setTimeout(r, 3000));
-          const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-          const statusData = await statusRes.json();
-          const exportTask = statusData.data.tasks.find(t => t.name === 'export' && t.status === 'finished');
-          if (exportTask) {
-            downloadLinks = exportTask.result.files;
-          }
+          'export-1': { operation: 'export/url', input: 'convert-1' }
         }
+      })
+    });
 
-        downloadLinks.forEach(file => {
-          const a = document.createElement('a');
-          a.href = file.url;
-          a.download = file.filename;
-          a.click();
-        });
+    const jobData = await jobRes.json();
+    if (!jobData.data || !jobData.data.tasks) throw new Error('Failed to create job.');
 
-      } catch (error) {
-        alert('Conversion failed. Please try again later.');
-        console.error(error);
+    const uploadTask = jobData.data.tasks.find(t => t.operation === 'import/upload');
+    if (!uploadTask || !uploadTask.result.form) throw new Error('Failed to get upload URL.');
+
+    // 2. Upload file
+    const uploadUrl = uploadTask.result.form.url;
+    const uploadForm = new FormData();
+    Object.entries(uploadTask.result.form.parameters).forEach(([key, value]) => {
+      uploadForm.append(key, value);
+    });
+    uploadForm.append('file', uploadedFile);
+
+    await fetch(uploadUrl, { method: 'POST', body: uploadForm });
+
+    // 3. Poll job status
+    let downloadLinks = [];
+    let attempts = 0, maxAttempts = 20;
+    while (downloadLinks.length === 0 && attempts < maxAttempts) {
+      await new Promise(r => setTimeout(r, 3000));
+      const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobData.data.id}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const statusData = await statusRes.json();
+      // Use operation for robustness, not name
+      const exportTask = statusData.data.tasks.find(t => t.operation === 'export/url' && t.status === 'finished');
+      if (exportTask && exportTask.result && exportTask.result.files) {
+        downloadLinks = exportTask.result.files;
       }
+      attempts++;
     }
-  </script>
+
+    if (!downloadLinks.length) throw new Error('Conversion timed out. Try a smaller PDF.');
+
+    // 4. Display download links instead of auto-downloading
+    const fileNameDiv = document.getElementById('fileName');
+    fileNameDiv.innerHTML = 'Download your images:<br>';
+    downloadLinks.forEach(file => {
+      const a = document.createElement('a');
+      a.href = file.url;
+      a.textContent = file.filename;
+      a.download = file.filename;
+      a.target = '_blank';
+      a.style.display = 'block';
+      fileNameDiv.appendChild(a);
+    });
+
+    btn.textContent = 'Done! Convert another?';
+    uploadedFile = null;
+    document.getElementById('fileInput').value = '';
+  } catch (error) {
+    alert('Conversion failed: ' + error.message);
+    document.getElementById('convertBtn').disabled = false;
+    document.getElementById('convertBtn').textContent = 'Convert & Download';
+    console.error(error);
+  }
+}
+</script>
 </body>
 </html>
