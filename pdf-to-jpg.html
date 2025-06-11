@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PDF to JPG – RenameIt.tools</title>
+  <meta name="description" content="Convert PDF to JPG instantly online. Free, fast & secure tool by RenameIt.tools – no tracking, no signup." />
+  <meta name="keywords" content="PDF to JPG, convert PDF to image, online PDF to JPG, free PDF converter, RenameIt.tools" />
   <link rel="stylesheet" href="style.css" />
 
   <!-- Google Analytics -->
@@ -65,14 +67,15 @@
 
   <footer>
     <p>
-      Made with ❤️ by Mido • 100% Secure – All tools run in your browser • <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
+      Made with ❤️ by Mido • 100% Secure – All tools run in your browser • 
+      <a href="https://coff.ee/midoy" target="_blank">Buy me a coffee</a>
     </p>
     <div class="ad-footer">[Sticky Footer Ad Placeholder]</div>
   </footer>
 
   <script>
     let uploadedFile;
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'; // your token
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'; // your real token
 
     function handleFiles(files) {
       uploadedFile = files[0];
@@ -98,7 +101,7 @@
           body: JSON.stringify({
             tasks: {
               upload_file: { operation: 'import/upload' },
-              convert: {
+              convert_to_jpg: {
                 operation: 'convert',
                 input: 'upload_file',
                 input_format: 'pdf',
@@ -106,7 +109,7 @@
                 page_range: '1-',
                 engine: 'poppler'
               },
-              export: { operation: 'export/url', input: 'convert' }
+              export_result: { operation: 'export/url', input: 'convert_to_jpg' }
             }
           })
         });
@@ -121,17 +124,16 @@
           uploadForm.append(key, value);
         });
         uploadForm.append('file', uploadedFile);
-
         await fetch(uploadUrl, { method: 'POST', body: uploadForm });
 
         let downloadLinks = [];
         while (downloadLinks.length === 0) {
           await new Promise(r => setTimeout(r, 3000));
-          const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
+          const pollRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
             headers: { 'Authorization': 'Bearer ' + token }
           });
-          const statusData = await statusRes.json();
-          const exportTask = statusData.data.tasks.find(t => t.name === 'export' && t.status === 'finished');
+          const pollData = await pollRes.json();
+          const exportTask = pollData.data.tasks.find(t => t.operation === 'export/url' && t.status === 'finished');
           if (exportTask) {
             downloadLinks = exportTask.result.files;
           }
