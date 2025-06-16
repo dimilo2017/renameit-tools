@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rename Files – RenameIt.tools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  
+<!-- Adsterra Banner -->
+<script type="text/javascript">
+  atOptions = {
+    'key' : '65503d39b9a878bdb57dbb9c03508f48',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+  document.write('<scr' + 'ipt type="text/javascript" src="//www.profitabledisplaynetwork.com/65503d39b9a878bdb57dbb9c03508f48/invoke.js"></scr' + 'ipt>');
+</script>
+
+  <h1>Rename Files</h1>
+  <input type="file" id="fileInput" multiple />
+  <input type="text" id="prefix" placeholder="Prefix" />
+  <input type="text" id="suffix" placeholder="Suffix" />
+  <button onclick="renameFiles()">Rename</button>
+  <ul id="output"></ul>
+  <footer>
+    <p>Made with ❤️ by Mido • 100% Secure – All tools run in your browser</p>
+    
+<!-- Adsterra Banner -->
+<script type="text/javascript">
+  atOptions = {
+    'key' : '65503d39b9a878bdb57dbb9c03508f48',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+  document.write('<scr' + 'ipt type="text/javascript" src="//www.profitabledisplaynetwork.com/65503d39b9a878bdb57dbb9c03508f48/invoke.js"></scr' + 'ipt>');
+</script>
+
+  </footer>
+  <script>
+    function renameFiles() {
+      const files = document.getElementById('fileInput').files;
+      const prefix = document.getElementById('prefix').value;
+      const suffix = document.getElementById('suffix').value;
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+      for (let i = 0; i < files.length; i++) {
+        const ext = files[i].name.split('.').pop();
+        const newName = prefix + (i + 1) + suffix + '.' + ext;
+        const li = document.createElement('li');
+        li.textContent = newName;
+        output.appendChild(li);
+      }
+    }
+  </script>
+</body>
+</html>

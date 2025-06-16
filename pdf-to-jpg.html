@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF to JPG – RenameIt.tools</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+</head>
+<body>
+  
+<!-- Adsterra Banner -->
+<script type="text/javascript">
+  atOptions = {
+    'key' : '65503d39b9a878bdb57dbb9c03508f48',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+  document.write('<scr' + 'ipt type="text/javascript" src="//www.profitabledisplaynetwork.com/65503d39b9a878bdb57dbb9c03508f48/invoke.js"></scr' + 'ipt>');
+</script>
+
+  <h1>PDF to JPG Converter</h1>
+  <input type="file" id="fileInput" accept="application/pdf" />
+  <canvas id="canvas"></canvas>
+  <footer>
+    <p>Made with ❤️ by Mido • 100% Secure – All tools run in your browser</p>
+    
+<!-- Adsterra Banner -->
+<script type="text/javascript">
+  atOptions = {
+    'key' : '65503d39b9a878bdb57dbb9c03508f48',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+  document.write('<scr' + 'ipt type="text/javascript" src="//www.profitabledisplaynetwork.com/65503d39b9a878bdb57dbb9c03508f48/invoke.js"></scr' + 'ipt>');
+</script>
+
+  </footer>
+  <script>
+    const input = document.getElementById('fileInput');
+    input.addEventListener('change', async () => {
+      const file = input.files[0];
+      const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+      const page = await pdf.getPage(1);
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const viewport = page.getViewport({ scale: 2.0 });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      canvas.toBlob((blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'converted.jpg';
+        link.click();
+      }, 'image/jpeg');
+    });
+  </script>
+</body>
+</html>
